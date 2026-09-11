@@ -102,7 +102,7 @@ kappa_result <- lapply(models, function(m) {
   
   tmp <- na.omit(tmp)
   
-  res <- kappa2(tmp, weight = "unweighted")
+  res <- kappa2(tmp, weight = "weighted")
   
   k  <- res$value
   se <- k / res$statistic
@@ -1280,7 +1280,7 @@ cluster_boot_accuracy(
 
 
 # ============================================================
-# Cluster bootstrap: unweighted Cohen's kappa
+# Cluster bootstrap: weighted Cohen's kappa
 # ============================================================
 
 calc_kappa <- function(ref, pred){
@@ -1305,7 +1305,7 @@ calc_kappa <- function(ref, pred){
   
   res <- irr::kappa2(
     tmp,
-    weight = "unweighted"
+    weight = "weighted"
   )
   
   return(res$value)
@@ -1389,7 +1389,7 @@ cluster_boot_kappa <- function(
     )
     
     
-    # Calculate unweighted Cohen's kappa
+    # Calculate weighted Cohen's kappa
     boot_values[b] <- tryCatch(
       
       calc_kappa(
@@ -1462,7 +1462,7 @@ run_cluster_accuracy_kappa <- function(
         
         # -------------------------
         # Cluster bootstrap
-        # unweighted Cohen's kappa
+        # weighted Cohen's kappa
         # -------------------------
         kap <- cluster_boot_kappa(
           data = d,
@@ -2151,7 +2151,7 @@ calc_patient_kappa <- function(ref, pred){
   
   irr::kappa2(
     tmp,
-    weight = "unweighted"
+    weight = "weighted"
   )$value
 }
 
@@ -2337,7 +2337,7 @@ patient_boot_metrics <- function(
     
     irr::kappa2(
       tmp,
-      weight = "unweighted"
+      weight = "weighted"
     )$value
   }
   
@@ -2949,10 +2949,10 @@ qwen_change_results
 
 
 # ============================================================
-# 8. Unweighted Cohen's kappa
+# 8. weighted Cohen's kappa
 # ============================================================
 
-calc_kappa_unweighted <- function(truth, prediction) {
+calc_kappa_weighted <- function(truth, prediction) {
   
   tmp <- data.frame(
     truth = truth,
@@ -2962,11 +2962,11 @@ calc_kappa_unweighted <- function(truth, prediction) {
   
   irr::kappa2(
     tmp,
-    weight = "unweighted"
+    weight = "weighted"
   )$value
 }
 # ============================================================
-# 9. Check all unweighted kappa values
+# 9. Check all weighted kappa values
 # ============================================================
 
 kappa_summary <- map_dfr(
@@ -2980,37 +2980,37 @@ kappa_summary <- map_dfr(
       cohort = cc,
       
       Radiologist =
-        calc_kappa_unweighted(
+        calc_kappa_weighted(
           d$truth,
           d$Radiologist
         ),
       
       Original =
-        calc_kappa_unweighted(
+        calc_kappa_weighted(
           d$truth,
           d$Original
         ),
       
       Qwen3 =
-        calc_kappa_unweighted(
+        calc_kappa_weighted(
           d$truth,
           d$Qwen3
         ),
       
       MedGemma =
-        calc_kappa_unweighted(
+        calc_kappa_weighted(
           d$truth,
           d$MedGemma
         ),
       
       GPT4 =
-        calc_kappa_unweighted(
+        calc_kappa_weighted(
           d$truth,
           d$GPT4
         ),
       
       DeepSeek =
-        calc_kappa_unweighted(
+        calc_kappa_weighted(
           d$truth,
           d$DeepSeek
         )
@@ -3021,10 +3021,10 @@ kappa_summary <- map_dfr(
 kappa_summary
 # ============================================================
 # 10. Patient-cluster bootstrap:
-#     formal comparison of dependent unweighted kappas
+#     formal comparison of dependent weighted kappas
 # ============================================================
 
-cluster_boot_kappa_unweighted <- function(
+cluster_boot_kappa_weighted <- function(
     data,
     method1,
     method2,
@@ -3051,7 +3051,7 @@ cluster_boot_kappa_unweighted <- function(
     
     irr::kappa2(
       tmp,
-      weight = "unweighted"
+      weight = "weighted"
     )$value
   }
   
@@ -3194,7 +3194,7 @@ all_kappa_results <- map_dfr(
     map2_dfr(
       comparisons$method1,
       comparisons$method2,
-      ~ cluster_boot_kappa_unweighted(
+      ~ cluster_boot_kappa_weighted(
         data = d_cc,
         method1 = .x,
         method2 = .y,
@@ -4032,7 +4032,7 @@ patient_score_dat <- dat %>%
   )
 
 # ============================================================
-# Patient-level unweighted Cohen's kappa
+# Patient-level weighted Cohen's kappa
 # Δkappa + 95% CI
 # Patient bootstrap
 # ============================================================
@@ -4058,12 +4058,12 @@ patient_kappa_difference <- function(
   # Observed kappas
   # ----------------------------------------------------------
   
-  k1 <- calc_unweighted_kappa(
+  k1 <- calc_weighted_kappa(
     d$truth,
     d[[method1]]
   )
   
-  k2 <- calc_unweighted_kappa(
+  k2 <- calc_weighted_kappa(
     d$truth,
     d[[method2]]
   )
@@ -4088,12 +4088,12 @@ patient_kappa_difference <- function(
       
       boot_dat <- d[idx, , drop = FALSE]
       
-      kb1 <- calc_unweighted_kappa(
+      kb1 <- calc_weighted_kappa(
         boot_dat$truth,
         boot_dat[[method1]]
       )
       
-      kb2 <- calc_unweighted_kappa(
+      kb2 <- calc_weighted_kappa(
         boot_dat$truth,
         boot_dat[[method2]]
       )
